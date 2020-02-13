@@ -24,18 +24,22 @@
 		public function run() {
 		//Получаем строку запроса
 			$uri = $this->getURI();
-			
+
 			//Проверка наличия запроса
 			foreach ( $this->routes as $uriPattern => $path ) {
 
 				if (preg_match("~$uriPattern~", $uri)) {
+					//Получаем внутренний путь
+					$internalRoute = preg_replace("~$uriPattern~", $path, $uri);
 
 					//Определяем какой контроллер и action будет обрабатывать запрос
-					$segment = explode('/', $path);
+					$segments = explode('/', $internalRoute);
 
-					$controllerName = ucfirst(array_shift($segment).'Controller');
+					$controllerName = ucfirst(array_shift($segments).'Controller');
 
-					$actionName = 'action'.ucfirst(array_shift($segment));
+					$actionName = 'action'.ucfirst(array_shift($segments));
+
+					$parameters = $segments;
 
 					//Подключить файл класса-контроллера
 					$controllerFile = ROOT.'/controllers/'.$controllerName.'.php';
@@ -47,7 +51,7 @@
 					//Создаем объект, вызываем action
 					$controllerObject = new $controllerName;
 
-					$result = $controllerObject->$actionName();
+					$result = call_user_func_array(array($controllerObject, $actionName), $parameters);
 
 					if ($result != null) {
 						break;
