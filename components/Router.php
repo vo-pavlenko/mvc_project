@@ -29,14 +29,14 @@
 			foreach ( $this->routes as $uriPattern => $path ) {
 
 				if (preg_match("~$uriPattern~", $uri)) {
+					
 					//Получаем внутренний путь
 					$internalRoute = preg_replace("~$uriPattern~", $path, $uri);
-
+					 
 					//Определяем какой контроллер и action будет обрабатывать запрос
 					$segments = explode('/', $internalRoute);
 
 					$controllerName = ucfirst(array_shift($segments).'Controller');
-
 					$actionName = 'action'.ucfirst(array_shift($segments));
 
 					$parameters = $segments;
